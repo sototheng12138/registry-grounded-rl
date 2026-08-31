@@ -1,0 +1,25 @@
+{
+  "files": {
+    "dev": {
+      "path": "dev.jsonl",
+      "rows": 64,
+      "sha256": "19719ebac16056fc7bbc756a820bd6cdbd97c15e610881963b3e6bfe14ff3c53"
+    },
+    "test": {
+      "path": "test.jsonl",
+      "rows": 128,
+      "sha256": "c12a41ac12a1d4db892c05e1900bad403ba5718915fe1a3e1ff27ccdddd36b19"
+    },
+    "train": {
+      "path": "train.jsonl",
+      "rows": 512,
+      "sha256": "d93541e4bd760c34178c3af579022d9ae505ac82ac9155cf767caaf3335e9a4c"
+    }
+  },
+  "generator": "deterministic-python-random",
+  "live_services_used": false,
+  "model_outputs_used": false,
+  "schema_version": "registry-grounded-rl/stateful-workflow-v1",
+  "scoring": "exact terminal workspace state; unrelated records must remain unchanged",
+  "seed": 1701
+}

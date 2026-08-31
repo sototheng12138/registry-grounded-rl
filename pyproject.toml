@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "registry-grounded-rl"
+version = "0.1.0"
+description = "Executable dynamic-tool environments for verifiable Agentic RL"
+readme = "README.md"
+requires-python = ">=3.10"
+
+[project.optional-dependencies]
+dev = ["pytest>=8", "ruff>=0.6"]
+model = ["torch>=2.2", "transformers>=4.51"]
+
+[project.scripts]
+registry-grounded-rl = "registry_grounded_rl.cli:main"
+
+[tool.setuptools]
+packages = ["registry_grounded_rl"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100

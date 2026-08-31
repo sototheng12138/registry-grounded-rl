@@ -1,0 +1,81 @@
+diff --git a/AgentGym-RL/verl/utils/agentgym/client.py b/AgentGym-RL/verl/utils/agentgym/client.py
+index c0fcc5a..140cf88 100644
+--- a/AgentGym-RL/verl/utils/agentgym/client.py
++++ b/AgentGym-RL/verl/utils/agentgym/client.py
+@@ -18,6 +18,12 @@ from agentenv.envs import (
+     WordleEnvClient,
+     SearchQAEnvClient,
+ )
++from registry_grounded_rl.agentgym_compat import RegistryGroundedAgentGymClient
++from registry_grounded_rl.stateful_agentgym import (
++    RegistryTodoAgentGymClient,
++    RegistryWeatherAgentGymClient,
++)
++from registry_grounded_rl.workflow_agentgym import RegistryWorkflowAgentGymClient
+ 
+ def init_env_client(args):
+     # task_name - task dict
+@@ -37,6 +43,10 @@ def init_env_client(args):
+         "sheet": SheetEnvClient,
+         "academia": AcademiaEnvClient,
+         "searchqa": SearchQAEnvClient,
++        "registrygrounded": RegistryGroundedAgentGymClient,
++        "registrytodo": RegistryTodoAgentGymClient,
++        "registryweather": RegistryWeatherAgentGymClient,
++        "registryworkflow": RegistryWorkflowAgentGymClient,
+     }
+     # select task according to the name
+     envclient_class = envclient_classes.get(args.task_name.lower(), None)
+@@ -53,4 +63,4 @@ def init_env_client(args):
+             if retry > args.max_retries:
+                 raise e
+             time.sleep(5)
+-    return env_client
+\ No newline at end of file
++    return env_client
+diff --git a/AgentGym-RL/verl/workers/rollout/agent_vllm_rollout/vllm_rollout.py b/AgentGym-RL/verl/workers/rollout/agent_vllm_rollout/vllm_rollout.py
+index a08c672..c55e791 100644
+--- a/AgentGym-RL/verl/workers/rollout/agent_vllm_rollout/vllm_rollout.py
++++ b/AgentGym-RL/verl/workers/rollout/agent_vllm_rollout/vllm_rollout.py
+@@ -46,6 +46,7 @@ import json
+ import time
+ import requests
+ from copy import deepcopy
++from registry_grounded_rl.rollout_seeding import independent_rollout_seed
+ from verl.utils.model import compute_position_id_with_mask
+ from verl.utils.torch_functional import get_eos_mask, pad_sequence_to_length
+ from verl.utils.agentgym.client import init_env_client
+@@ -224,6 +225,8 @@ class vLLMRollout(BaseRollout):
+                 rollout_handler.score = 0
+ 
+         rounds = 0
++        base_sampling_seed = self.sampling_params.seed
++        distributed_rank = torch.distributed.get_rank()
+         task_rounds = [0] * batch_size
+         rollout_bar = tqdm(total = max_rounds, desc="Running rounds", disable=torch.distributed.get_rank() != 0)
+         def agent_step(i, idx):
+@@ -256,10 +259,23 @@ class vLLMRollout(BaseRollout):
+             rollout_bar.set_description(f"Rounds {rounds + 1}/{max_rounds} | Active agents per gpu: {len(not_done_idxs)}")
+             # users can customize different sampling_params at different run
+             with self.update_sampling_params(**kwargs):
++                sampling_params = self.sampling_params
++                if do_sample and base_sampling_seed is not None:
++                    sampling_params = []
++                    for rollout_index in not_done_idxs:
++                        params = deepcopy(self.sampling_params)
++                        params.seed = independent_rollout_seed(
++                            base_seed=int(base_sampling_seed),
++                            global_step=int(global_steps or 0),
++                            round_index=rounds,
++                            rank=distributed_rank,
++                            rollout_index=rollout_index,
++                        )
++                        sampling_params.append(params)
+                 output = self.inference_engine.generate(
+                     prompts=None,
+                     prompt_token_ids=generation_prompt_idxs,
+-                    sampling_params=self.sampling_params,
++                    sampling_params=sampling_params,
+                     use_tqdm=False)
+             response_ids = output[0].tolist()
+             all_done_flag = True

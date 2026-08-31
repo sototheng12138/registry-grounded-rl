@@ -1,0 +1,51 @@
+{
+  "schema_version": "registry-grounded-rl/public-release-metrics-v1",
+  "evaluation": {
+    "split": "frozen_internal_dev",
+    "tasks": 64,
+    "registry_views": 6,
+    "model_test_rollout_performed": false
+  },
+  "b4_start": {
+    "primary_successes": 122,
+    "primary_trials": 320,
+    "unavailable_successes": 12,
+    "unavailable_trials": 64,
+    "harmonic_percent": 25.14
+  },
+  "b8_seeds": {
+    "2901": {
+      "primary_successes": 128,
+      "unavailable_successes": 15,
+      "harmonic_percent": 29.56
+    },
+    "2911": {
+      "primary_successes": 127,
+      "unavailable_successes": 19,
+      "harmonic_percent": 33.97
+    },
+    "2921": {
+      "primary_successes": 127,
+      "unavailable_successes": 11,
+      "harmonic_percent": 23.99
+    }
+  },
+  "mean_delta_percentage_points": {
+    "primary": 1.67,
+    "unavailable_correct_stop": 4.69,
+    "harmonic": 4.03
+  },
+  "hierarchical_bootstrap_95_percent_ci_percentage_points": {
+    "primary": [0.10, 3.23],
+    "unavailable_correct_stop": [-1.56, 11.98],
+    "harmonic": [-1.15, 9.63]
+  },
+  "rollout_seed_diagnostic": {
+    "mean_unique_trajectories_per_group_before": 1.5625,
+    "mean_unique_trajectories_per_group_after": 4.125,
+    "zero_reward_variance_groups_before": 15,
+    "zero_reward_variance_groups_after": 11,
+    "groups": 16
+  },
+  "claim_boundary": "Primary improved on frozen dev; stopping and harmonic intervals cross zero, and one B8 seed is negative on unavailable."
+}

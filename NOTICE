@@ -1,0 +1,19 @@
+RegistryGrounded-RL
+Copyright (c) 2026 Hesong Zhao
+
+Project-owned code is released under the MIT License.
+
+The training integration targets:
+
+  AgentGym-RL, FudanNLP-Agent, MIT License
+  https://github.com/WooooDyy/AgentGym
+
+  verl, ByteDance and contributors, Apache License 2.0
+  https://github.com/volcengine/verl
+
+Neither upstream repository is vendored here. The minimal integration and
+per-trajectory rollout-seeding changes are distributed as
+patches/agentgym-rl-registry-grounded.patch. Apply the patch to the pinned
+AgentGym-RL revision recorded in AGENTGYM_INTEGRATION.md and retain all upstream
+license and notice files.
+
